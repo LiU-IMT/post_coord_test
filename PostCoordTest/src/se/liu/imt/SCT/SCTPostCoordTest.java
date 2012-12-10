@@ -2,22 +2,30 @@ package se.liu.imt.SCT;
 
 /*    Copyright 2012 Daniel Karlsson
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.*/
-
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.*/
 
 /**
  * @author Daniel Karlsson, daniel.karlsson@liu.se
  *
+ * 
+ * This software tests the performance of reasoners when adding post-coordinated 
+ * expressions to SNOMED CT. This distribution does not in it self include a 
+ * SNOMED CT release. Further, this distribution does not include input for 
+ * generating examples of post-coordinated expressions.
+ * 
+ * A SNOMED CT release must be accessed through IHTSDO or a National Release Center.
+ * An (enormous) input file with generated post-coordination expressions examples
+ * can be provided by the author. 
  */
 
 import java.io.BufferedReader;
@@ -59,7 +67,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 public class SCTPostCoordTest {
 
 	private static final Logger log = Logger.getLogger(SCTPostCoordTest.class);
-	private static final long twentyFour = 1000*60*60*24;
+	private static final long twentyFour = 1000 * 60 * 60 * 24;
 
 	/**
 	 * @param args
@@ -153,18 +161,17 @@ public class SCTPostCoordTest {
 		final int tries = config.getInt("test_parameters.tries");
 		log.debug("Iterations: " + iterations + ", Jump size: " + jumpSize
 				+ ", Tries: " + tries);
-		
+
 		long startTime = System.currentTimeMillis();
-		
+
 		// outer loop for iterations
 		for (int i = 0; i <= iterations; i++) {
-			
+
 			// break if 24 hours has passed
-			if(System.currentTimeMillis() - startTime > twentyFour) {
+			if (System.currentTimeMillis() - startTime > twentyFour) {
 				log.debug("Ending because time limit has been reached");
 				break;
 			}
-
 
 			log.info("Current size: " + currentSize);
 
@@ -210,11 +217,14 @@ public class SCTPostCoordTest {
 
 					if (line == null)
 						break;
+
 					String[] comp = line.split("\t");
 
+					// create class for new expression
 					OWLClass new_pc_concept = dataFactory.getOWLClass(IRI
 							.create("exp" + (i * jumpSize) + j));
 
+					// select
 					String baseConcept = comp[0];
 					String bodyStructure = comp[1];
 					String morphology = comp[2];

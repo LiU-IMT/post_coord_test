@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<snomed>
+	<OWL_file>/home/danka/snomed20120731.owl</OWL_file>
+</snomed>
+<classifier>
+	<name>HermiT</name>
+	<reasoner_factory>org.semanticweb.HermiT.Reasoner.ReasonerFactory</reasoner_factory>
+</classifier>
+<test_parameters>
+	<input>/home/danka/result.txt</input>
+	<iterations>2</iterations>
+	<jump_size>1</jump_size>
+	<tries>1</tries>
+</test_parameters>
+<output>
+	<file_name_tag>result</file_name_tag>
+</output>
+</configuration>
