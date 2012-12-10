@@ -1,3 +1,5 @@
+package se.liu.imt.SCT;
+
 /*    Copyright 2012 Daniel Karlsson
 
    Licensed under the Apache License, Version 2.0 (the "License");
