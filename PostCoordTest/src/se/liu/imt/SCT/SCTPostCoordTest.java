@@ -2,31 +2,31 @@ package se.liu.imt.SCT;
 
 /*    Copyright 2012 Daniel Karlsson
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
 
 /**
- * @author Daniel Karlsson, daniel.karlsson@liu.se
- *
- * 
- * This software tests the performance of reasoners when adding post-coordinated 
- * expressions to SNOMED CT. This distribution does not in it self include a 
- * SNOMED CT release. Further, this distribution does not include input for 
- * generating examples of post-coordinated expressions.
- * 
- * A SNOMED CT release must be accessed through IHTSDO or a National Release Center.
- * An (enormous) input file with generated post-coordination expressions examples
- * can be provided by the author. 
- */
+* @author Daniel Karlsson, daniel.karlsson@liu.se
+*
+* 
+* This software tests the performance of reasoners when adding post-coordinated 
+* expressions to SNOMED CT. This distribution does not in it self include a 
+* SNOMED CT release. Further, this distribution does not include input for 
+* generating examples of post-coordinated expressions.
+* 
+* A SNOMED CT release must be accessed through IHTSDO or a National Release Center.
+* An (enormous) input file with generated post-coordination expressions examples
+* can be provided by the author. 
+*/
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,11 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
@@ -55,11 +52,8 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -67,7 +61,6 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 public class SCTPostCoordTest {
 
 	private static final Logger log = Logger.getLogger(SCTPostCoordTest.class);
-	private static final long twentyFour = 1000 * 60 * 60 * 24;
 
 	/**
 	 * @param args
@@ -94,6 +87,8 @@ public class SCTPostCoordTest {
 			System.exit(-1);
 		}
 
+		final long maxTime = 1000*60*60*config.getInt("test_parameters.max_time");
+		
 		log.debug("Starting test SNOMED CT post-coordination...");
 
 		// creating ontology manager and loading of SNOMED CT stated form OWL
@@ -125,7 +120,7 @@ public class SCTPostCoordTest {
 		log.debug("Created reasoner");
 
 		// SNOMED CT IRI string
-		final String SNOMED_IRI = "http://www.ihtsdo.org/";
+		final String SNOMED_IRI = "http://snomed.info/id/";
 
 		// create input file reader
 		BufferedReader in = null;
@@ -161,17 +156,18 @@ public class SCTPostCoordTest {
 		final int tries = config.getInt("test_parameters.tries");
 		log.debug("Iterations: " + iterations + ", Jump size: " + jumpSize
 				+ ", Tries: " + tries);
-
+		
 		long startTime = System.currentTimeMillis();
-
+		
 		// outer loop for iterations
 		for (int i = 0; i <= iterations; i++) {
-
+			
 			// break if 24 hours has passed
-			if (System.currentTimeMillis() - startTime > twentyFour) {
+			if(System.currentTimeMillis() - startTime > maxTime) {
 				log.debug("Ending because time limit has been reached");
 				break;
 			}
+
 
 			log.info("Current size: " + currentSize);
 
@@ -188,8 +184,8 @@ public class SCTPostCoordTest {
 				if (classifierName.equalsIgnoreCase("elk")) {
 					// nothing special
 				} else if (classifierName.equalsIgnoreCase("snorocket")) {
-					SnorocketReasoner r = (SnorocketReasoner) reasoner;
-					r.synchronizeSnorocket();
+					//SnorocketOWLReasoner r = (SnorocketOWLReasoner) reasoner;
+					//r.synchronizeSnorocket();
 				} else if (classifierName.equalsIgnoreCase("fact++")) {
 					// nothing special
 				} else if (classifierName.equalsIgnoreCase("hermit")) {
@@ -217,33 +213,30 @@ public class SCTPostCoordTest {
 
 					if (line == null)
 						break;
-
 					String[] comp = line.split("\t");
 
-					// create class for new expression
 					OWLClass new_pc_concept = dataFactory.getOWLClass(IRI
 							.create("exp" + (i * jumpSize) + j));
 
-					// select
 					String baseConcept = comp[0];
 					String bodyStructure = comp[1];
 					String morphology = comp[2];
 
 					OWLClass baseConceptClass = dataFactory.getOWLClass(IRI
-							.create(SNOMED_IRI + "SCT_" + baseConcept));
+							.create(SNOMED_IRI +  baseConcept));
 					OWLClass bodyStructureClass = dataFactory.getOWLClass(IRI
-							.create(SNOMED_IRI + "SCT_" + bodyStructure));
+							.create(SNOMED_IRI +  bodyStructure));
 					OWLClass morphologyClass = dataFactory.getOWLClass(IRI
-							.create(SNOMED_IRI + "SCT_" + morphology));
+							.create(SNOMED_IRI +  morphology));
 					OWLObjectProperty roleGroupProp = dataFactory
 							.getOWLObjectProperty(IRI.create(SNOMED_IRI
-									+ "RoleGroup"));
+									+ "609096000"));
 					OWLObjectProperty findingSiteProp = dataFactory
 							.getOWLObjectProperty(IRI.create(SNOMED_IRI
-									+ "SCT_363698007"));
+									+ "363698007"));
 					OWLObjectProperty morphologyProp = dataFactory
 							.getOWLObjectProperty(IRI.create(SNOMED_IRI
-									+ "SCT_116676008"));
+									+ "116676008"));
 
 					Set<OWLClassExpression> conceptSet = new HashSet<OWLClassExpression>();
 					conceptSet.add(dataFactory.getOWLObjectSomeValuesFrom(

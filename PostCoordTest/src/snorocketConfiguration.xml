@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 <snomed>
-	<OWL_file>/home/danka/snomed20120731.owl</OWL_file>
+	<OWL_file>/home/daniel/res_StatedOWLF_Core_INT_20130731.owl</OWL_file>
 </snomed>
 <classifier>
 	<name>Snorocket</name>
-	<reasoner_factory>au.csiro.snorocket.owlapi3.SnorocketReasonerFactory</reasoner_factory>
+	<reasoner_factory>au.csiro.snorocket.owlapi.SnorocketReasonerFactory</reasoner_factory>
 </classifier>
 <test_parameters>
 	<input>/home/danka/result.txt</input>
 	<iterations>2</iterations>
 	<jump_size>10000</jump_size>
 	<tries>1</tries>
+	<max_time>5</max_time>
 </test_parameters>
 <output>
 	<file_name_tag>result</file_name_tag>
